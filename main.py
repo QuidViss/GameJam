@@ -13,8 +13,11 @@ class Player(pygame.sprite.Sprite):
         super().__init__() 
         self.images_right = []
         self.images_left = []
+        self.images_climb = []
         self.index = 0
+        self.indexclimb = 0
         self.counter = 0
+        self.counterclimb = 0
         self.stair=False
         for num in range(1, 4):
             img_right = pygame.image.load(f"images/right{num}.png")
@@ -23,6 +26,10 @@ class Player(pygame.sprite.Sprite):
             img_left = pygame.transform.scale(img_left, (42, 60))
             self.images_right.append(img_right)
             self.images_left.append(img_left)
+        for num in range(1, 3):
+            img_climb = pygame.image.load(f"images/climb{num}.png")
+            img_climb = pygame.transform.scale(img_climb, (42, 60))
+            self.images_climb.append(img_climb)
         self.image = self.images_right[self.index]
         # self.image = self.images_left[self.index]
 
@@ -39,6 +46,7 @@ class Player(pygame.sprite.Sprite):
         self.dx = 0
         self.dy = 0
         walking = 20
+        climbing = 20
 
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_SPACE] and self.jumped == False:
@@ -64,11 +72,18 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.images_left[self.index]
         if pressed[pygame.K_DOWN] and self.stair==True:
             self.dy=2
+            self.image = self.images_climb[self.indexclimb]
+            
         elif pressed[pygame.K_UP] and self.stair==True:
             self.dy=-2
+            self.image = self.images_climb[self.indexclimb]
 
-
+        if pressed[pygame.K_UP] == False and pressed[pygame.K_DOWN] == False and self.stair == True:
+            self.counterclimb = 0
+            self.indexclimb = 0
+            self.image = self.images_climb[0]
         self.counter += 1
+        self.counterclimb += 1
         if self.counter > walking:
             self.counter = 0
             self.index += 1
@@ -79,7 +94,11 @@ class Player(pygame.sprite.Sprite):
             if self.direction == -1:
                 self.image = self.images_left[self.index]
         
-
+        if self.counterclimb > climbing:
+            self.counterclimb = 0
+            self.indexclimb += 1
+            if self.indexclimb >= 2:
+                self.indexclimb = 0
 
         
         self.vel_y += 1
