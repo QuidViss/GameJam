@@ -120,7 +120,7 @@ class Enemy(pygame.sprite.Sprite):
         self.image=pygame.image.load("images/enemy.gif")
         self.image = pygame.transform.scale(self.image, (30, 30))
         self.rect = self.image.get_rect()
-        self.rect.center=(1100,800-81)
+        self.rect.center=(1100,800-87)
         self.speed=-3
     def update(self):
         global OUTX
@@ -265,7 +265,9 @@ def main():
             backrect.y=-533
         else:
             OUTY=0
-                
+        collene=pygame.sprite.groupcollide(enemy,stair,False,False)
+        for j in collene:
+            j.speed=j.speed*(-1)
         for i in all_sprites:
             i.update()
         backrect.x+=OUTX*4
