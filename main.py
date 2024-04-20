@@ -7,26 +7,21 @@ speed = 4
 FPS = 60
 OUTX=0
 OUTY=0
+POS=1
+positions=[["images/together.png",(0,-345),(0,-79),(0,187),(0,453),(0,719),(1200,-345),(1200,-79),(1200,187),(1200,453),(1200,719),(300,435),(1600,435),(500,169),(1800,169),(1000,-99),(300,-365),(1400,-365),(500,-433),(1700,-167),(500,630),(1700,630)],
+           ["images/together.png",(0,-345),(0,-79),(0,187),(0,453),(0,719),(1200,-345),(1200,-79),(1200,187),(1200,453),(1200,719),(666,435),(1400,435),(400,169),(800,-99),(1550,-99),(500,-365),(1100,-365),(200,-167),(1700,-167),(200,630),(1700,630)],
+           ["images/together.png",(0,-345),(0,-79),(0,187),(0,453),(0,719),(1200,-345),(1200,-79),(1200,187),(1200,453),(1200,719),(700,435),(1700,435),(800,169),(3500,-99),(1450,-99),(600,-365),(1700,-365),(200,-167),(1400,-433),(200,630),(1400,630)],
+           ["images/together.png",(0,-345),(0,-79),(0,187),(0,453),(0,719),(1200,-345),(1200,-79),(1200,187),(1200,453),(1200,719),(600,435),(1400,435),(1800,169),(400,-99),(1000,-99),(700,-365),(1650,-365),(200,-433),(1700,-433),(200,630),(1700,630)]]
+botpos=[[(200,-463),(800,-463),(1400,-463),(900,-197),(200,69),(800,69),(1400,69),(300,335),(750,335),(1400,335),(1000,604)],[],[],[]]
+enem=[(800,-360),(1200,-360),(100,-94),(720,-94),(1720,-94),(300,172),(1200,172),(1680,172),(100,438),(690,438),(380,704),(800,704),(1550,704)]
 clock = pygame.time.Clock()
-
-
-
-#sounds
-jump = pygame.mixer.Sound("sounds/jump.wav")
-
-
-
-
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__() 
         self.images_right = []
         self.images_left = []
-        self.images_climb = []
         self.index = 0
-        self.indexclimb = 0
         self.counter = 0
-        self.counterclimb = 0
         self.stair=False
         for num in range(1, 4):
             img_right = pygame.image.load(f"images/right{num}.png")
@@ -35,10 +30,6 @@ class Player(pygame.sprite.Sprite):
             img_left = pygame.transform.scale(img_left, (42, 60))
             self.images_right.append(img_right)
             self.images_left.append(img_left)
-        for num in range(1, 3):
-            img_climb = pygame.image.load(f"images/climb{num}.png")
-            img_climb = pygame.transform.scale(img_climb, (42, 60))
-            self.images_climb.append(img_climb)
         self.image = self.images_right[self.index]
         # self.image = self.images_left[self.index]
 
@@ -55,14 +46,12 @@ class Player(pygame.sprite.Sprite):
         self.dx = 0
         self.dy = 0
         walking = 20
-        climbing = 20
 
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_SPACE] and self.jumped == False:
             self.vel_y = -15
             self.jumped = True
             self.stair=False
-            jump.play()
 
         if pressed[pygame.K_LEFT]:
             self.dx -= speed
@@ -82,18 +71,11 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.images_left[self.index]
         if pressed[pygame.K_DOWN] and self.stair==True:
             self.dy=2
-            self.image = self.images_climb[self.indexclimb]
-            
         elif pressed[pygame.K_UP] and self.stair==True:
             self.dy=-2
-            self.image = self.images_climb[self.indexclimb]
 
-        if pressed[pygame.K_UP] == False and pressed[pygame.K_DOWN] == False and self.stair == True:
-            self.counterclimb = 0
-            self.indexclimb = 0
-            self.image = self.images_climb[0]
+
         self.counter += 1
-        self.counterclimb += 1
         if self.counter > walking:
             self.counter = 0
             self.index += 1
@@ -104,11 +86,7 @@ class Player(pygame.sprite.Sprite):
             if self.direction == -1:
                 self.image = self.images_left[self.index]
         
-        if self.counterclimb > climbing:
-            self.counterclimb = 0
-            self.indexclimb += 1
-            if self.indexclimb >= 2:
-                self.indexclimb = 0
+
 
         
         self.vel_y += 1
@@ -144,19 +122,20 @@ class Floor(pygame.sprite.Sprite):
         global OUTY
         self.rect.move_ip(OUTX*4,OUTY*2)
 class Enemy(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self,x,y):
         super().__init__() 
         self.image=pygame.image.load("images/enemy.gif")
         self.image = pygame.transform.scale(self.image, (30, 30))
         self.rect = self.image.get_rect()
-        self.rect.center=(1100,800-87)
+        self.rect.x=x
+        self.rect.y=y
         self.speed=-3
     def update(self):
         global OUTX
         global OUTY
-        if self.rect.left<0:
+        if self.rect.left<backrect.x:
             self.speed=3
-        if self.rect.right>1200:
+        if self.rect.right>backrect.x+2000:
             self.speed=-3
         self.rect.move_ip(self.speed+OUTX*4,OUTY*2)
 class Stair(pygame.sprite.Sprite):
@@ -171,8 +150,32 @@ class Stair(pygame.sprite.Sprite):
         global OUTX
         global OUTY
         self.rect.move_ip(OUTX*4,OUTY*2)
-
-backimg = pygame.image.load("images/background.png")
+class Door(pygame.sprite.Sprite):
+    def __init__(self,x,y,index):
+        super().__init__() 
+        self.image=pygame.image.load("images/door.png")
+        self.image = pygame.transform.scale(self.image, (80, 100))
+        self.rect = self.image.get_rect()
+        self.rect.x=x
+        self.rect.y=y
+        self.index=index
+    def update(self):
+        global OUTX
+        global OUTY
+        self.rect.move_ip(OUTX*4,OUTY*2)
+class Bottle(pygame.sprite.Sprite):
+    def __init__(self,x,y):
+        super().__init__() 
+        self.image=pygame.image.load("images/bottle.png")
+        self.image = pygame.transform.scale(self.image, (30, 60))
+        self.rect = self.image.get_rect() 
+        self.rect.x=x
+        self.rect.y=y
+    def update(self):
+        global OUTX
+        global OUTY
+        self.rect.move_ip(OUTX*4,OUTY*2)
+backimg = pygame.image.load("images/together.png")
 backimg=pygame.transform.scale(backimg, (2000, 1333))
 backrect=backimg.get_rect()
 backrect.x=0
@@ -181,7 +184,7 @@ backrect.y=-533
 
 
 
-player = Player(100, 466)
+player = Player(400, 300)
 play1=pygame.sprite.Group()
 play1.add(player)
 floor1=Floor(0,0)
@@ -205,21 +208,58 @@ floor.add(floor7)
 floor.add(floor8)
 floor.add(floor9)
 floor.add(floor10)
-enemy1=Enemy()
 enemy=pygame.sprite.Group()
+enemy1=Enemy(400,-360)
+enemy2=Enemy(1200,-360)
+enemy3=Enemy(100,-94)
+enemy4=Enemy(600,-94)
+enemy5=Enemy(1680,-94)
+enemy6=Enemy(300,172)
+enemy7=Enemy(1200,172)
+enemy8=Enemy(1680,172)
+enemy9=Enemy(100,438)
+enemy10=Enemy(600,438)
+enemy11=Enemy(380,704)
+enemy12=Enemy(800,704)
+enemy13=Enemy(1550,704)
 enemy.add(enemy1)
+enemy.add(enemy2)
+enemy.add(enemy3)
+enemy.add(enemy4)
+enemy.add(enemy5)
+enemy.add(enemy6)
+enemy.add(enemy7)
+enemy.add(enemy8)
+enemy.add(enemy9)
+enemy.add(enemy10)
+enemy.add(enemy11)
+enemy.add(enemy12)
+enemy.add(enemy13)
 all_sprites=pygame.sprite.Group()
-stair1=Stair(200,169)
-stair2=Stair(500,169+266)
-stair3=Stair(700,169)
-stair4=Stair(1200,-99)
-stair5=Stair(1500,-365)
+stair1=Stair(666,169+266)
+stair2=Stair(1400,169+266)
+stair3=Stair(400,169)
+stair4=Stair(800,-99)
+stair5=Stair(1600,-99)
+stair6=Stair(500,-365)
+stair7=Stair(1100,-365)
 stair=pygame.sprite.Group()
 stair.add(stair1)
 stair.add(stair2)
 stair.add(stair3)
 stair.add(stair4)
 stair.add(stair5)
+stair.add(stair6)
+stair.add(stair7)
+door1=Door(300,-167,0)
+door2=Door(2000-300,-167,1)
+door3=Door(300,800-170,2)
+door4=Door(2000-300,800-170,3)
+door=pygame.sprite.Group()
+door.add(door1)
+door.add(door2)
+door.add(door3)
+door.add(door4)
 all_sprites.add(floor1)
 all_sprites.add(floor2)
 all_sprites.add(floor3)
@@ -235,37 +275,188 @@ all_sprites.add(stair2)
 all_sprites.add(stair3)
 all_sprites.add(stair4)
 all_sprites.add(stair5)
-all_sprites.add(enemy1)
-all_sprites.add(player)
-def main():
-    lastcoll=None
+all_sprites.add(stair6)
+all_sprites.add(stair7)
+all_sprites.add(door1)
+all_sprites.add(door2)
+all_sprites.add(door3)
+all_sprites.add(door4)
+def start(colldoor):
     done = False
+    t=0
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
                 pygame.quit()
                 sys.exit()
+        s = pygame.Surface((1200,800))
+        t+=3
+        if t>255:
+            t=255
+            done=True
+        s.set_alpha(t)# alpha level
+        s.fill((0,0,0))# this fills the entire surface
+        screen.blit(s, (0,0)) 
+        pygame.display.update()
+        clock.tick(FPS)
+    change(colldoor)
+def end():
+    done = False
+    t=255
+    while not done:
+        
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+                pygame.quit()
+                sys.exit()
+        
+        screen.blit(backimg,backrect)
+        for i in all_sprites:
+            screen.blit(i.image,i.rect)
+        screen.blit(player.image,player.rect)
+        for i in enemy:
+            screen.blit(i.image,i.rect)
+        s = pygame.Surface((1200,800))
+        t-=5
+        if t<0:
+            t=0
+            done=True
+        if t==0:
+            main()
+        s.set_alpha(t)# alpha level
+        s.fill((0,0,0))# this fills the entire surface
+        screen.blit(s, (0,0)) 
+        pygame.display.update()
+        clock.tick(FPS)
+def change(colldoor):
+    global backimg
+    global backrect
+    global POS
+    index=colldoor.index
+    if index%2==0:
+        POS-=1
+    else:
+        POS+=1
+    if POS==-1:
+        POS=3
+    elif POS==4:
+        POS=0
+    if index==0:
+        j=1
+        for i in all_sprites:  
+            i.rect.x=positions[POS][j][0]-800
+            i.rect.y=positions[POS][j][1]+533
+            j+=1
+        j=0
+        for i in enemy:  
+            i.rect.x=enem[j][0]-800
+            i.rect.y=enem[j][1]+533
+            i.speed=-4
+            j+=1
+        backimg = pygame.image.load("images/back1.png")
+        backimg=pygame.transform.scale(backimg, (2000, 1333))
+        backrect=backimg.get_rect()
+        backrect.x=-800
+        backrect.y=0
+        player.rect.center=(positions[POS][19][0]-800+50,positions[POS][19][1]+533+69)
+    elif index==1:
+        j=1
+        for i in all_sprites:  
+            i.rect.x=positions[POS][j][0]
+            i.rect.y=positions[POS][j][1]+533
+            j+=1
+        j=0
+        for i in enemy:  
+            i.rect.x=enem[j][0]
+            i.rect.y=enem[j][1]+533
+            i.speed=-4
+            j+=1
+        backimg = pygame.image.load("images/back1.png")
+        backimg=pygame.transform.scale(backimg, (2000, 1333))
+        backrect=backimg.get_rect()
+        backrect.x=0
+        backrect.y=0
+        player.rect.center=(positions[POS][18][0]+50,positions[POS][18][1]+533+69)
+    elif index==2:
+        j=1
+        for i in all_sprites:  
+            i.rect.x=positions[POS][j][0]-800
+            i.rect.y=positions[POS][j][1]
+            j+=1
+        j=0
+        for i in enemy:  
+            i.rect.x=enem[j][0]-800
+            i.rect.y=enem[j][1]
+            i.speed=-4
+            j+=1
+        backimg = pygame.image.load("images/back1.png")
+        backimg=pygame.transform.scale(backimg, (2000, 1333))
+        backrect=backimg.get_rect()
+        backrect.x=-800
+        backrect.y=-533
+        player.rect.center=(positions[POS][21][0]-800+50,positions[POS][21][1]+69)
+    else:
+        j=1
+        for i in all_sprites:  
+            i.rect.x=positions[POS][j][0]
+            i.rect.y=positions[POS][j][1]
+            j+=1
+        j=0
+        for i in enemy:  
+            i.rect.x=enem[j][0]
+            i.rect.y=enem[j][1]
+            i.speed=-4
+            j+=1
+        backimg = pygame.image.load("images/back1.png")
+        backimg=pygame.transform.scale(backimg, (2000, 1333))
+        backrect=backimg.get_rect()
+        backrect.x=0
+        backrect.y=-533
+        player.rect.center=(positions[POS][20][0]+50,positions[POS][20][1]+69)
+    global speed
+    speed=6
+
+    end()
+def main():
+    done = False
+    while not done:
+        global backimg
+        global backrect
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+                pygame.quit()
+                sys.exit()
+
+
+
         collflo=pygame.sprite.spritecollideany(player,floor)
-        if collflo and player.rect.bottom>collflo.rect.top and player.stair==False:
+        if collflo and player.rect.bottom>collflo.rect.top and player.rect.bottom<collflo.rect.bottom-28 and player.stair==False:
             player.rect.bottom = collflo.rect.top
             player.dy = 0
             player.jumped = False
+
+
+
         collsta=pygame.sprite.spritecollideany(player,stair)
         pressed=pygame.key.get_pressed()
         if collsta and pressed[pygame.K_DOWN] and player.rect.bottom+20<collsta.rect.bottom:
             player.stair=True
-            lastcoll=collsta
         elif collsta and pressed[pygame.K_UP] and player.rect.bottom-26>collsta.rect.top:
             player.stair=True
         elif collsta and player.rect.bottom-18<collsta.rect.top  and player.jumped==False:
             player.stair=False
             player.rect.bottom=collsta.rect.top+18
-        elif collsta and player.rect.bottom+7>collsta.rect.bottom and player.jumped==False:
+        elif collsta and player.rect.bottom+7>collsta.rect.bottom and player.jumped==True:
             player.stair=False
             player.rect.bottom=collsta.rect.bottom-7
         elif not collsta:
             player.stair=False
+
+
+
         global OUTX
         global OUTY
         if player.rect.right>799 and backrect.x>-800 and pressed[pygame.K_RIGHT]:
@@ -282,6 +473,9 @@ def main():
             backrect.x=0
         else:
             OUTX=0
+
+
+
         if player.rect.top<400 and backrect.y<0 and player.stair==True and pressed[pygame.K_UP]:
             OUTY=1
         elif backrect.y>0:
@@ -289,22 +483,41 @@ def main():
             backrect.y=0
         elif  backrect.y>-533 and player.stair==True and pressed[pygame.K_DOWN]:
             OUTY=-1
-        elif backrect.y<-533:
+        elif backrect.y<-533:   
             OUTY=0
             backrect.y=-533
         else:
             OUTY=0
+
+
+
         collene=pygame.sprite.groupcollide(enemy,stair,False,False)
         for j in collene:
             j.speed=j.speed*(-1)
         for i in all_sprites:
             i.update()
+        player.update()
+        for i in enemy:
+            i.update()
+        colldoor=pygame.sprite.spritecollideany(player,door)
+        if colldoor and pressed[pygame.K_RETURN]:
+            start(colldoor)
+
         backrect.x+=OUTX*4
         backrect.y+=OUTY*2
-        screen.fill((0,0,0))
         screen.blit(backimg,backrect)
         for i in all_sprites:
             screen.blit(i.image,i.rect)
+        screen.blit(player.image,player.rect)
+        for i in enemy:
+            screen.blit(i.image,i.rect)
+        s = pygame.Surface((1200,800))  # the size of your rect
+        s.set_alpha(1)                # alpha level
+        s.fill((0,0,0))           # this fills the entire surface
+        screen.blit(s, (0,0)) 
         pygame.display.update()
         clock.tick(FPS)
 main()
+
+
+    
