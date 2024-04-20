@@ -8,6 +8,15 @@ FPS = 60
 OUTX=0
 OUTY=0
 clock = pygame.time.Clock()
+
+
+
+#sounds
+jump = pygame.mixer.Sound("sounds/jump.wav")
+
+
+
+
 class Player(pygame.sprite.Sprite):
     def __init__(self, x, y):
         super().__init__() 
@@ -53,6 +62,7 @@ class Player(pygame.sprite.Sprite):
             self.vel_y = -15
             self.jumped = True
             self.stair=False
+            jump.play()
 
         if pressed[pygame.K_LEFT]:
             self.dx -= speed
