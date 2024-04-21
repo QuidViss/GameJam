@@ -8,8 +8,8 @@ pygame.init()
 # SETTINGS FOR FIRST PART
 w, h = 1200, 800
 screen = pygame.display.set_mode((w, h))
-speed = 4
-speedy=2
+speed = 6
+speedy=3
 printbot=0
 cathappy=0
 doghappy=0
@@ -35,7 +35,7 @@ game_score_text = game_score_font.render(f'BOTTLES: {printbot}', True, (255, 255
 game_score_rect = game_score_text.get_rect(midtop=(1000,50))
 # positions of stairs, floor, doors to change it when scene is changed
 positions=[["images/abylaikhan.png",(0,-345),(0,-79),(0,187),(0,453),(0,719),(1200,-345),(1200,-79),(1200,187),(1200,453),(1200,719),(300,435),(1600,435),(500,169),(1800,169),(1000,-99),(300,-365),(1400,-365),(500,-433),(1700,-167),(500,630),(1700,630)],
-           ["images/together.png",(0,-345),(0,-79),(0,187),(0,453),(0,719),(1200,-345),(1200,-79),(1200,187),(1200,453),(1200,719),(666,435),(1400,435),(400,169),(800,-99),(1550,-99),(500,-365),(1100,-365),(200,-167),(1700,-167),(200,630),(1700,630)],
+           ["images/tolebi.png",(0,-345),(0,-79),(0,187),(0,453),(0,719),(1200,-345),(1200,-79),(1200,187),(1200,453),(1200,719),(666,435),(1400,435),(400,169),(800,-99),(1550,-99),(500,-365),(1100,-365),(30,-168),(1800,-167),(30,632),(1700,632)],
            ["images/panfilov.png",(0,-345),(0,-79),(0,187),(0,453),(0,719),(1200,-345),(1200,-79),(1200,187),(1200,453),(1200,719),(700,435),(1700,435),(800,169),(3500,-99),(1450,-99),(600,-365),(1700,-365),(200,-167),(1400,-433),(200,630),(1400,630)],
            ["images/kazbi.png",(0,-345),(0,-79),(0,187),(0,453),(0,719),(1200,-345),(1200,-79),(1200,187),(1200,453),(1200,719),(600,435),(1400,435),(1800,169),(400,-99),(1000,-99),(700,-365),(1650,-365),(200,-433),(1700,-433),(200,630),(1700,630)]]
 # position of bottles in every 4 scene
@@ -44,7 +44,7 @@ botpos=[[(200,-458),(800,-458),(1400,-458),(900,-192),(200,74),(800,74),(1400,69
         [(200,-458),(800,-458),(1400,-458),(900,-192),(200,74),(800,74),(1400,6974),(300,340),(750,340),(1400,340),(1000,609 )],
         [(200,-458),(800,-458),(1400,-458),(900,-192),(200,74),(800,74),(1400,6974),(300,340),(750,340),(1400,340),(1000,609 )]]
 # positions of enemy to change it when scene is changed
-enem=[(800,-360),(1200,-360),(100,-94),(720,-94),(1720,-94),(300,172),(1200,172),(1680,172),(100,438),(690,438),(380,704),(800,704),(1550,704)]
+enem=[(800,-360),(1200,-360),(100,-94),(720,-94),(1720,-94),(300,172),(1200,172),(1680,172),(100,438),(730,438),(380,704),(800,704),(1550,704)]
 clock = pygame.time.Clock()
 # SETTINGS FOR SECOND PART
 # ultimate settings
@@ -157,7 +157,11 @@ class Player(pygame.sprite.Sprite):
                 self.indexclimb += 1
             if self.indexclimb >= 2:
                 self.indexclimb = 0
-        
+        if self.counterclimb > climbing: 
+            self.counterclimb = 0 
+            self.indexclimb += 1 
+            if self.indexclimb >= 2: 
+                self.indexclimb = 0
 
 
         # checking tot gravitation
@@ -427,108 +431,35 @@ for i in range(5):
     health.append(health1)
 play1=pygame.sprite.Group()
 play1.add(player)
-floor1=Floor(0,0)
-floor2=Floor(0,1)
-floor3=Floor(0,2)
-floor4=Floor(0,3)
-floor5=Floor(0,4)
-floor6=Floor(1,0)
-floor7=Floor(1,1)
-floor8=Floor(1,2)
-floor9=Floor(1,3)
-floor10=Floor(1,4)
-floor=pygame.sprite.Group()
-floor.add(floor1)
-floor.add(floor2)
-floor.add(floor3)
-floor.add(floor4)
-floor.add(floor5)
-floor.add(floor6)
-floor.add(floor7)
-floor.add(floor8)
-floor.add(floor9)
-floor.add(floor10)
-enemy=pygame.sprite.Group()
-enemy1=Enemy(400,-360)
-enemy2=Enemy(1200,-360)
-enemy3=Enemy(100,-94)
-enemy4=Enemy(600,-94)
-enemy5=Enemy(1680,-94)
-enemy6=Enemy(300,172)
-enemy7=Enemy(1200,172)
-enemy8=Enemy(1680,172)
-enemy9=Enemy(100,438)
-enemy10=Enemy(600,438)
-enemy11=Enemy(380,704)
-enemy12=Enemy(800,704)
-enemy13=Enemy(1550,704)
-enemy.add(enemy1)
-enemy.add(enemy2)
-enemy.add(enemy3)
-enemy.add(enemy4)
-enemy.add(enemy5)
-enemy.add(enemy6)
-enemy.add(enemy7)
-enemy.add(enemy8)
-enemy.add(enemy9)
-enemy.add(enemy10)
-enemy.add(enemy11)
-enemy.add(enemy12)
-enemy.add(enemy13)
 all_sprites=pygame.sprite.Group()
-stair1=Stair(666,169+266)
-stair2=Stair(1400,169+266)
-stair3=Stair(400,169)
-stair4=Stair(800,-99)
-stair5=Stair(1600,-99)
-stair6=Stair(400,-365)
-stair7=Stair(1100,-365)
+floor=pygame.sprite.Group()
+enemy=pygame.sprite.Group()
 stair=pygame.sprite.Group()
-stair.add(stair1)
-stair.add(stair2)
-stair.add(stair3)
-stair.add(stair4)
-stair.add(stair5)
-stair.add(stair6)
-stair.add(stair7)
-door1=Door(30,-168,0)
-door2=Door(2000-200,-167,1)
-door3=Door(30,800-168,2)
-door4=Door(2000-300,800-168,3)
+door=pygame.sprite.Group()
+bottle=pygame.sprite.Group()
+for i in range(2):
+    for j in range(5):
+        new_floor=Floor(i,j)
+        floor.add(new_floor)
+        all_sprites.add(new_floor)
+for i in range(13):
+    new_enemy=Enemy(enem[i][0],enem[i][1])
+    enemy.add(new_enemy)
+for i in range(7):
+    new_stair=Stair(positions[POS][i+11][0],positions[POS][i+11][1])
+    stair.add(new_stair)
+    all_sprites.add(new_stair)
+for i in range(4):
+    new_door=Door(positions[POS][i+18][0],positions[POS][i+18][1],i)
+    door.add(new_door)
+    all_sprites.add(new_door)
 door5=Door(1550,98,4)
 door6=Door(2000-130,366,4)
 door6.image=pygame.image.load("images/deliverymachine.png")
 door6.image=pygame.transform.scale(door6.image,(80,100))
-door=pygame.sprite.Group()
-door.add(door1)
-door.add(door2)
-door.add(door3)
-door.add(door4)
-bottle=pygame.sprite.Group()
 for i in range (11):
     new_bottle=Bottle(botpos[POS][i][0],botpos[POS][i][1])
     bottle.add(new_bottle)
-all_sprites.add(floor1)
-all_sprites.add(floor2)
-all_sprites.add(floor3)
-all_sprites.add(floor4)
-all_sprites.add(floor5)
-all_sprites.add(floor6)
-all_sprites.add(floor7)
-all_sprites.add(floor8)
-all_sprites.add(floor9)
-all_sprites.add(floor10)
-all_sprites.add(stair1)
-all_sprites.add(stair2)
-all_sprites.add(stair3)
-all_sprites.add(stair4)
-all_sprites.add(stair5)
-all_sprites.add(stair6)
-all_sprites.add(stair7)
-all_sprites.add(door1)
-all_sprites.add(door2)
-all_sprites.add(door3)
-all_sprites.add(door4)
 
 def transparency():
     done = False
@@ -546,7 +477,7 @@ def transparency():
         if POS==3:
             screen.blit(door5.image,door5.rect)
         if POS==2:
-            screen.blit(door5.image,door5.rect)
+            screen.blit(door6.image,door6.rect)
         for i in bottle:
             screen.blit(i.image,i.rect)
         for i in health:
@@ -994,6 +925,9 @@ def main_menu():
     BG = pygame.image.load("images/bc.png")
     BG = pygame.transform.scale(BG,(1200,800))
     BG_rect = BG.get_rect()
+    main_text = pygame.image.load("images/text_menu.png")
+    main_text = pygame.transform.scale(main_text,(800,400))
+    main_tect_rect = game_score_text.get_rect(midtop=(400,300))
     while True:
         screen.blit(BG, BG_rect)
 
@@ -1007,6 +941,7 @@ def main_menu():
                              text_input="QUIT", font=pygame.font.Font("images/Daydream.ttf", 25), base_color=(215, 252, 212), hovering_color=(89, 4, 4))
 
         screen.blit(TITLE, TITLE_RECT)
+        screen.blit(main_text, main_tect_rect)
 
         for button in [PLAY_BUTTON, QUIT_BUTTON]:
             button.changeColor(MENU_MOUSE_POS)
@@ -1065,7 +1000,6 @@ def buy_menu():
     global doghappy
     global studenthappy
     global printbot
-    printbot=50
     while done:
         MENU_MOUSE_POS = pygame.mouse.get_pos()
         text_1 = text_font1.render('5 bottles:', True, (255, 255, 255))
