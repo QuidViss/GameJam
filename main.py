@@ -20,8 +20,11 @@ class Player(pygame.sprite.Sprite):
         super().__init__() 
         self.images_right = []
         self.images_left = []
+        self.images_climb = []
         self.index = 0
         self.counter = 0
+        self.indexclimb = 0
+        self.counterclimb = 0
         self.stair=False
         for num in range(1, 4):
             img_right = pygame.image.load(f"images/right{num}.png")
@@ -30,6 +33,11 @@ class Player(pygame.sprite.Sprite):
             img_left = pygame.transform.scale(img_left, (42, 60))
             self.images_right.append(img_right)
             self.images_left.append(img_left)
+
+        for num in range(1, 3):
+            img_climb = pygame.image.load(f"images/climb{num}.png")
+            img_climb = pygame.transform.scale(img_climb, (42, 60))
+            self.images_climb.append(img_climb)
         self.image = self.images_right[self.index]
         # self.image = self.images_left[self.index]
 
@@ -46,12 +54,14 @@ class Player(pygame.sprite.Sprite):
         self.dx = 0
         self.dy = 0
         walking = 20
+        climbing = 20
 
         pressed = pygame.key.get_pressed()
         if pressed[pygame.K_SPACE] and self.jumped == False:
             self.vel_y = -15
             self.jumped = True
             self.stair=False
+            jump.play()
 
         if pressed[pygame.K_LEFT]:
             self.dx -= speed
@@ -71,11 +81,18 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.images_left[self.index]
         if pressed[pygame.K_DOWN] and self.stair==True:
             self.dy=2
+            self.image = self.images_climb[self.indexclimb]
         elif pressed[pygame.K_UP] and self.stair==True:
             self.dy=-2
+            self.image = self.images_climb[self.indexclimb]
 
+        if pressed[pygame.K_UP] == False and pressed[pygame.K_DOWN] == False and self.stair == True:
+            self.counterclimb = 0
+            self.indexclimb = 0
+            self.image = self.images_climb[0]
 
         self.counter += 1
+        self.counterclimb += 1
         if self.counter > walking:
             self.counter = 0
             self.index += 1
@@ -85,6 +102,12 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.images_right[self.index]
             if self.direction == -1:
                 self.image = self.images_left[self.index]
+
+        if self.counterclimb > climbing:
+            self.counterclimb = 0
+            self.indexclimb += 1
+            if self.indexclimb >= 2:
+                self.indexclimb = 0
         
 
 
@@ -113,8 +136,8 @@ class Player(pygame.sprite.Sprite):
 class Floor(pygame.sprite.Sprite):
     def __init__(self,x,y):
         super().__init__() 
-        self.image=pygame.image.load("images/backfloor.png")
-        self.image = pygame.transform.scale(self.image, (1200, 74))
+        self.image=pygame.image.load("images/floorimg.png")
+        self.image = pygame.transform.scale(self.image, (2000, 66))
         self.rect = self.image.get_rect()
         self.rect.center=(600+1200*x,200*(y+1)+24+66*y-532)
     def update(self):
@@ -175,11 +198,16 @@ class Bottle(pygame.sprite.Sprite):
         global OUTX
         global OUTY
         self.rect.move_ip(OUTX*4,OUTY*2)
-backimg = pygame.image.load("images/together.png")
-backimg=pygame.transform.scale(backimg, (2000, 1333))
+backimg = pygame.image.load("images/tolebi.png")
+backimg=pygame.transform.scale(backimg, (2000, 1330))
 backrect=backimg.get_rect()
 backrect.x=0
 backrect.y=-533
+
+
+
+
+jump = pygame.mixer.Sound("sounds/jump.wav")
 
 
 
@@ -241,7 +269,7 @@ stair2=Stair(1400,169+266)
 stair3=Stair(400,169)
 stair4=Stair(800,-99)
 stair5=Stair(1600,-99)
-stair6=Stair(500,-365)
+stair6=Stair(400,-365)
 stair7=Stair(1100,-365)
 stair=pygame.sprite.Group()
 stair.add(stair1)
@@ -251,10 +279,10 @@ stair.add(stair4)
 stair.add(stair5)
 stair.add(stair6)
 stair.add(stair7)
-door1=Door(300,-167,0)
-door2=Door(2000-300,-167,1)
-door3=Door(300,800-170,2)
-door4=Door(2000-300,800-170,3)
+door1=Door(30,-168,0)
+door2=Door(2000-200,-167,1)
+door3=Door(30,800-168,2)
+door4=Door(2000-300,800-168,3)
 door=pygame.sprite.Group()
 door.add(door1)
 door.add(door2)
@@ -355,7 +383,7 @@ def change(colldoor):
             i.rect.y=enem[j][1]+533
             i.speed=-4
             j+=1
-        backimg = pygame.image.load("images/back1.png")
+        backimg = pygame.image.load("images/abylaikhan.png")
         backimg=pygame.transform.scale(backimg, (2000, 1333))
         backrect=backimg.get_rect()
         backrect.x=-800
@@ -373,7 +401,7 @@ def change(colldoor):
             i.rect.y=enem[j][1]+533
             i.speed=-4
             j+=1
-        backimg = pygame.image.load("images/back1.png")
+        backimg = pygame.image.load("images/kazbi.png")
         backimg=pygame.transform.scale(backimg, (2000, 1333))
         backrect=backimg.get_rect()
         backrect.x=0
@@ -391,7 +419,7 @@ def change(colldoor):
             i.rect.y=enem[j][1]
             i.speed=-4
             j+=1
-        backimg = pygame.image.load("images/back1.png")
+        backimg = pygame.image.load("images/panfilov.png")
         backimg=pygame.transform.scale(backimg, (2000, 1333))
         backrect=backimg.get_rect()
         backrect.x=-800
@@ -409,7 +437,7 @@ def change(colldoor):
             i.rect.y=enem[j][1]
             i.speed=-4
             j+=1
-        backimg = pygame.image.load("images/back1.png")
+        backimg = pygame.image.load("images/tolebi.png")
         backimg=pygame.transform.scale(backimg, (2000, 1333))
         backrect=backimg.get_rect()
         backrect.x=0
