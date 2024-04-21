@@ -198,7 +198,7 @@ class Bottle(pygame.sprite.Sprite):
         global OUTX
         global OUTY
         self.rect.move_ip(OUTX*4,OUTY*2)
-backimg = pygame.image.load("images/tolebi.png")
+backimg = pygame.image.load("images/tolebii.png")
 backimg=pygame.transform.scale(backimg, (2000, 1330))
 backrect=backimg.get_rect()
 backrect.x=0
@@ -269,7 +269,7 @@ stair2=Stair(1400,169+266)
 stair3=Stair(400,169)
 stair4=Stair(800,-99)
 stair5=Stair(1600,-99)
-stair6=Stair(400,-365)
+stair6=Stair(500,-365)
 stair7=Stair(1100,-365)
 stair=pygame.sprite.Group()
 stair.add(stair1)
@@ -279,9 +279,9 @@ stair.add(stair4)
 stair.add(stair5)
 stair.add(stair6)
 stair.add(stair7)
-door1=Door(30,-168,0)
-door2=Door(2000-200,-167,1)
-door3=Door(30,800-168,2)
+door1=Door(200,-168,0)
+door2=Door(2000-300,-167,1)
+door3=Door(300,800-168,2)
 door4=Door(2000-300,800-168,3)
 door=pygame.sprite.Group()
 door.add(door1)
@@ -383,7 +383,7 @@ def change(colldoor):
             i.rect.y=enem[j][1]+533
             i.speed=-4
             j+=1
-        backimg = pygame.image.load("images/abylaikhan.png")
+        backimg = pygame.image.load("images/tolebii.png")
         backimg=pygame.transform.scale(backimg, (2000, 1333))
         backrect=backimg.get_rect()
         backrect.x=-800
@@ -437,7 +437,7 @@ def change(colldoor):
             i.rect.y=enem[j][1]
             i.speed=-4
             j+=1
-        backimg = pygame.image.load("images/tolebi.png")
+        backimg = pygame.image.load("images/abylaikhan.png")
         backimg=pygame.transform.scale(backimg, (2000, 1333))
         backrect=backimg.get_rect()
         backrect.x=0
