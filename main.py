@@ -1,6 +1,7 @@
 import pygame, sys
 import random
 import math
+from video import *
 from menu import *
 import pygame.colordict
 pygame.init()
@@ -188,7 +189,6 @@ class Player(pygame.sprite.Sprite):
         if self.rect.right > w:
             self.rect.right = w
             self.dx = 0
-# classes for first part
 class Floor(pygame.sprite.Sprite):
     def __init__(self,x,y):
         super().__init__() 
@@ -349,7 +349,7 @@ class Player_second(pygame.sprite.Sprite):
             self.rect.y += self.speed
 
         # Check if the player has killed enough zombies to activate the ultimate ability
-        if self.zombies_killed >= 13 and not self.ultimate_ready:
+        if self.zombies_killed >=17 and not self.ultimate_ready:
             self.activate_ultimate()
 
         # Update ultimate timer if ultimate ability is active
@@ -362,7 +362,8 @@ class Player_second(pygame.sprite.Sprite):
         if self.ultimate_image_display_time > 0:
             if pygame.time.get_ticks() - self.ultimate_image_display_time >= self.ultimate_image_display_duration:
                 self.ultimate_image_display_time = 0
-                screen.fill((0, 0, 0))  # Clear the screen after ultimate duration
+                screen.fill((0, 0, 0))
+                ultimate_sound.stop()  # Clear the screen after ultimate duration
             else:
                 screen.blit(ultimate_image, ultimate_image_rect)  # Display ultimate image
 
@@ -392,35 +393,6 @@ class Player_second(pygame.sprite.Sprite):
         #     self.ultimate_timer += clock.get_rawtime()
         #     if self.ultimate_timer >= self.ultimate_duration:
         #         self.deactivate_ultimate()
-class Button():
-	def __init__(self, image, pos, text_input, font, base_color, hovering_color):
-		self.image = image
-		self.x_pos = pos[0]
-		self.y_pos = pos[1]
-		self.font = font
-		self.base_color, self.hovering_color = base_color, hovering_color
-		self.text_input = text_input
-		self.text = self.font.render(self.text_input, True, self.base_color)
-		if self.image is None:
-			self.image = self.text
-		self.rect = self.image.get_rect(center=(self.x_pos, self.y_pos))
-		self.text_rect = self.text.get_rect(center=(self.x_pos, self.y_pos-10))
-
-	def update(self, screen):
-		if self.image is not None:
-			screen.blit(self.image, self.rect)
-		screen.blit(self.text, self.text_rect)
-
-	def checkForInput(self, position):
-		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
-			return True
-		return False
-
-	def changeColor(self, position):
-		if position[0] in range(self.rect.left, self.rect.right) and position[1] in range(self.rect.top, self.rect.bottom):
-			self.text = self.font.render(self.text_input, True, self.hovering_color)
-		else:
-			self.text = self.font.render(self.text_input, True, self.base_color)
 
 
 player = Player(400, 300)
@@ -463,7 +435,7 @@ for i in range (11):
 
 def transparency():
     done = False
-    t=255#alpha level and timer
+    t=255 #alpha level and timer
     while not done:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -815,6 +787,13 @@ def second_round():
     game_score_text = game_score_font.render(f'PAST ZOMBIES: {game_score}', True, (0, 0, 0))
     game_score_rect = game_score_text.get_rect(midtop=(200,50))
 
+    time_show = pygame.image.load("images/second_time.png")
+    time_show = pygame.transform.scale(time_show, (304, 18))
+    time_show_rect = time_show.get_rect()
+    time_show_rect.x=846
+    time_show_rect.y=60
+    
+    
     # Главный цикл игры
     current_time =0
     running = True
@@ -830,6 +809,31 @@ def second_round():
             t=255
             running=False
         s = pygame.Surface((1200,800))
+        s.set_alpha(t)# alpha level
+        s.fill((0,0,0))# this fills the entire surface
+        screen.blit(s, (0,0)) 
+        pygame.display.update()
+        clock.tick(FPS)
+    done = False
+    t=255 #alpha level and timer
+    while not done:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                done = True
+                pygame.quit()
+                sys.exit()
+        # show last elements 
+        screen.blit(player.image, player.rect)
+        screen.blit(game_score_text, game_score_rect)
+        screen.blit(backgroundgame, backgroundgame_rect)
+        #make surface to transparency
+        s = pygame.Surface((1200,800))
+        t-=5
+        if t<0:
+            t=0
+            done=True
+        if t==0:
+            done=True
         s.set_alpha(t)# alpha level
         s.fill((0,0,0))# this fills the entire surface
         screen.blit(s, (0,0)) 
@@ -870,7 +874,7 @@ def second_round():
             zombie_spawn_interval = 40
             speed_second = 2.5
         elif current_time>4500:
-            end()
+            zombie_spawn_interval=999999999
 
 
 
@@ -904,10 +908,17 @@ def second_round():
                 if zombie.hp <= 0:
                     zombie.kill()
                     player.increase_zombies_killed()# 3. Выводим количество убитых зомби
-
+        if current_time<4502:
+            time_go_surf = pygame.Surface((current_time/15, 14))
+            time_go_surf.fill((25,255,25))
+            time_go=pygame.Rect(848,62,current_time/15,14)
         screen.blit(game_score_text, game_score_rect)
+        screen.blit(time_show, time_show_rect)
+        screen.blit(time_go_surf,time_go)
         if game_score > 15:
             lose()
+        if current_time > 4500 and zombies_group.__len__()==0:
+            end()
 
         pygame.display.update()
         clock.tick(60)
@@ -1049,6 +1060,7 @@ def buy_menu():
     pygame.quit()
     sys.exit()
 def end():
+    ultimate_sound.stop()
     done=True
     t=0
     j=0
@@ -1144,6 +1156,6 @@ def end():
     
     pygame.quit()
     sys.exit()
+video()
 main_menu()
-
     

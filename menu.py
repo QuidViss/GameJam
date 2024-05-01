@@ -36,41 +36,42 @@ class Button():
 		else:
 			self.text = self.font.render(self.text_input, True, self.base_color)
 
-# def play():
-#     while True:
-#         # ТУТ ДОЛЖНА ИГРА ЗАПУСКАТЬСЯ
-#         pygame.quit()
-    
-def options():
-    while True:
-        pygame.quit()
-        # ЧЕ ТО ДОБАВИТЬ НУЖНО В ОПЦИЯХ 
-
-        # OPTIONS_MOUSE_POS = pygame.mouse.get_pos()
-
-        # SCREEN.fill("white")
-
-        # OPTIONS_TEXT = pygame.font.SysFont("silver", 50).render("This is the OPTIONS screen.", True, "Black")
-        # OPTIONS_RECT = OPTIONS_TEXT.get_rect(center=(640, 260))
-        # SCREEN.blit(OPTIONS_TEXT, OPTIONS_RECT)
-
-        # OPTIONS_BACK = Button(image=None, pos=(640, 460), 
-        #                     text_input="BACK", font=pygame.font.SysFont("silver", 50), base_color="Black", hovering_color="Green")
-
-        # OPTIONS_BACK.changeColor(OPTIONS_MOUSE_POS)
-        # OPTIONS_BACK.update(SCREEN)
-
-        # for event in pygame.event.get():
-        #     if event.type == pygame.QUIT:
-        #         pygame.quit()
-        #         sys.exit()
-        #     if event.type == pygame.MOUSEBUTTONDOWN:
-        #         if OPTIONS_BACK.checkForInput(OPTIONS_MOUSE_POS):
-        #             main_menu()
-
-        # pygame.display.update()
-
 def main_menu():
+    # running =True
+    # while running:
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             pygame.quit()
+    #             sys.exit()
+    #     t+=5
+    #     if t>255:
+    #         t=255
+    #         running=False
+    #     s = pygame.Surface((1200,800))
+    #     s.set_alpha(t)# alpha level
+    #     s.fill((0,0,0))# this fills the entire surface
+    #     SCREEN.blit(s, (0,0)) 
+    #     pygame.display.update()
+    # t=255 #alpha level and timerrunning =True
+    # running=True
+    # while running:
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             running=False
+    #             pygame.quit()
+    #                 sys.exit()
+    #         # show last elements 
+    #         SCREEN.blit(BG, BG_rect)
+    #         #make surface to transparency
+    #         s = pygame.Surface((1200,800))
+    #         t-=5
+    #         if t<=0:
+    #             t=0
+    #             running=False
+    #         s.set_alpha(t)# alpha level
+    #         s.fill((0,255,0))# this fills the entire surface
+    #         SCREEN.blit(s, (0,0)) 
+    #         pygame.display.update()
     while True:
         SCREEN.blit(BG, BG_rect)
 
@@ -98,8 +99,6 @@ def main_menu():
             if event.type == pygame.MOUSEBUTTONDOWN:
                 if PLAY_BUTTON.checkForInput(MENU_MOUSE_POS):
                     return False
-                if OPTIONS_BUTTON.checkForInput(MENU_MOUSE_POS):
-                    options()
                 if QUIT_BUTTON.checkForInput(MENU_MOUSE_POS):
                     pygame.quit()
                     sys.exit()
