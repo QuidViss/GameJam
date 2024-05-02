@@ -40,12 +40,15 @@ positions=[["images/abylaikhan.png",(0,-345),(0,-79),(0,187),(0,453),(0,719),(12
            ["images/panfilov.png",(0,-345),(0,-79),(0,187),(0,453),(0,719),(1200,-345),(1200,-79),(1200,187),(1200,453),(1200,719),(700,435),(1700,435),(800,169),(3500,-99),(1450,-99),(600,-365),(1700,-365),(200,-167),(1400,-433),(200,630),(1400,630)],
            ["images/kazbi.png",(0,-345),(0,-79),(0,187),(0,453),(0,719),(1200,-345),(1200,-79),(1200,187),(1200,453),(1200,719),(600,435),(1400,435),(1800,169),(400,-99),(1000,-99),(700,-365),(1650,-365),(200,-433),(1700,-433),(200,630),(1700,630)]]
 # position of bottles in every 4 scene
-botpos=[[(200,-458),(800,-458),(1400,-458),(900,-192),(200,74),(800,74),(1400,6974),(300,340),(750,340),(1400,340),(1000,609 )],
-        [(200,-458),(800,-458),(1400,-458),(900,-192),(200,74),(800,74),(1400,6974),(300,340),(750,340),(1400,340),(1000,609 )],
-        [(200,-458),(800,-458),(1400,-458),(900,-192),(200,74),(800,74),(1400,6974),(300,340),(750,340),(1400,340),(1000,609 )],
-        [(200,-458),(800,-458),(1400,-458),(900,-192),(200,74),(800,74),(1400,6974),(300,340),(750,340),(1400,340),(1000,609 )]]
+botpos=[[(200,-458),(800,-458),(1400,-458),(900,-192),(200,74),(800,74),(1400,74),(300,340),(750,340),(1400,340),(1000,609 )],
+        [(200,-458),(800,-458),(1400,-458),(900,-192),(200,74),(800,74),(1400,74),(300,340),(750,340),(1400,340),(1000,609 )],
+        [(200,-458),(800,-458),(1400,-458),(900,-192),(200,74),(800,74),(1400,74),(300,340),(750,340),(1400,340),(1000,609 )],
+        [(200,-458),(800,-458),(1400,-458),(900,-192),(200,74),(800,74),(1400,74),(300,340),(750,340),(1400,340),(1000,609 )]]
 # positions of enemy to change it when scene is changed
-enem=[(800,-360),(1200,-360),(100,-94),(720,-94),(1720,-94),(300,172),(1200,172),(1680,172),(100,438),(730,438),(380,704),(800,704),(1550,704)]
+enem=[[(800,-390),(1200,-390),(100,-124),(720,-124),(1900,-124),(300,142),(800,142),(1680,142),(100,408),(730,408),(100,674),(800,674),(1550,674)],
+      [(800,-390),(1200,-390),(100,-124),(720,-124),(1720,-124),(300,142),(1200,142),(1680,142),(100,408),(730,408),(380,674),(800,674),(1550,674)],
+      [(800,-390),(1200,-390),(100,-124),(720,-124),(1640,-124),(300,142),(1200,142),(1680,142),(100,408),(900,408),(380,674),(800,674),(1550,674)],
+      [(200,-390),(1200,-390),(100,-124),(1200,-124),(1720,-124),(300,142),(1200,142),(1680,408),(100,408),(730,408),(380,674),(800,674),(1550,674)]]
 clock = pygame.time.Clock()
 # SETTINGS FOR SECOND PART
 # ultimate settings
@@ -203,19 +206,40 @@ class Floor(pygame.sprite.Sprite):
 class Enemy(pygame.sprite.Sprite):
     def __init__(self,x,y):
         super().__init__() 
-        self.image=pygame.image.load("images/enemy.gif")
-        self.image = pygame.transform.scale(self.image, (30, 30))
-        self.rect = self.image.get_rect()
+        self.images_right = []
+        self.images_left = []
+        self.counter=0
+        self.index=0
+        for num in range(1, 11):
+            img_right = pygame.image.load(f"images/zombie_1/zombie_{num}.png")
+            img_right = pygame.transform.scale(img_right, (42, 60))
+            img_left = pygame.image.load(f"images/zombie_1/zombieleft_{num}.png")
+            img_left = pygame.transform.scale(img_left, (42, 60))
+            self.images_right.append(img_right)
+            self.images_left.append(img_left)
+        self.image = pygame.image.load(f"images/zombie_1/zombie_{num}.png")
+        self.image = pygame.transform.scale(img_right, (42, 60))
+        self.rect=self.image.get_rect()
         self.rect.x=x
         self.rect.y=y
-        self.speed=-3
+        self.speed=-2
     def update(self):
         global OUTX
         global OUTY
+        self.counter+=1
         if self.rect.left<backrect.x:
-            self.speed=3
+            self.speed=2
         if self.rect.right>backrect.x+2000:
-            self.speed=-3
+            self.speed=-2
+        if self.counter>8:
+            self.counter=0
+            self.index+=1
+            if self.index >= len(self.images_right):
+                self.index = 0
+            if self.speed>1:
+                self.image = self.images_right[self.index]
+            if self.speed<-1:
+                self.image = self.images_left[self.index]
         self.rect.move_ip(self.speed+OUTX*speed,OUTY*speedy)
 class Stair(pygame.sprite.Sprite):
     def __init__(self,x,y):
@@ -415,7 +439,7 @@ for i in range(2):
         floor.add(new_floor)
         all_sprites.add(new_floor)
 for i in range(13):
-    new_enemy=Enemy(enem[i][0],enem[i][1])
+    new_enemy=Enemy(enem[POS][i][0],enem[POS][i][1])
     enemy.add(new_enemy)
 for i in range(7):
     new_stair=Stair(positions[POS][i+11][0],positions[POS][i+11][1])
@@ -514,9 +538,9 @@ def change(colldoor):
         j=0
         # changing enemys position
         for i in enemy:  
-            i.rect.x=enem[j][0]-800
-            i.rect.y=enem[j][1]+533
-            i.speed=-4
+            i.rect.x=enem[POS][j][0]-800
+            i.rect.y=enem[POS][j][1]+533
+            i.speed=-2
             j+=1
         j=0
         #remove bottle sprites to add new scene bottles
@@ -544,9 +568,9 @@ def change(colldoor):
             j+=1
         j=0
         for i in enemy:  
-            i.rect.x=enem[j][0]
-            i.rect.y=enem[j][1]+533
-            i.speed=-4
+            i.rect.x=enem[POS][j][0]
+            i.rect.y=enem[POS][j][1]+533
+            i.speed=-2
             j+=1
         j=0
         for i in bottle:
@@ -572,9 +596,9 @@ def change(colldoor):
             j+=1
         j=0
         for i in enemy:  
-            i.rect.x=enem[j][0]-800
-            i.rect.y=enem[j][1]
-            i.speed=-4
+            i.rect.x=enem[POS][j][0]-800
+            i.rect.y=enem[POS][j][1]
+            i.speed=-2
             j+=1
         for i in bottle:
             bottle.remove(i)
@@ -599,9 +623,9 @@ def change(colldoor):
             j+=1
         j=0
         for i in enemy:  
-            i.rect.x=enem[j][0]
-            i.rect.y=enem[j][1]
-            i.speed=-4
+            i.rect.x=enem[POS][j][0]
+            i.rect.y=enem[POS][j][1]
+            i.speed=-2
             j+=1
         for i in bottle:
             bottle.remove(i)
