@@ -25,6 +25,11 @@ def video():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
+
+        pressed=pygame.key.get_pressed()
+        if pressed[pygame.K_RETURN]:
+            sound.stop()
+            done=False
         if i/1000>=1:
             s=""
         elif i/100>=1:

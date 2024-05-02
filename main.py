@@ -339,7 +339,6 @@ class Zombie(pygame.sprite.Sprite):
         if self.rect.top > self.screen_height:
             self.kill()
             game_score += 1
-            print(game_score)
 class Player_second(pygame.sprite.Sprite):
     def __init__(self, image, screen_width, screen_height):
         super().__init__()
@@ -717,7 +716,6 @@ def first_round():
         collbot=pygame.sprite.spritecollideany(player,bottle)
         if collbot:
             printbot+=1
-            print(printbot)
             bottle.remove(collbot)
         colldopl=pygame.sprite.collide_rect(player,door5)
         if colldopl and pressed[pygame.K_RETURN] and POS==3:
