@@ -45,7 +45,7 @@ def video():
             image_rect=image.get_rect()
             screen.blit(image,image_rect)
             i+=1
-            if i==1203:
+            if i==1000:
                 print(tin)
                 done=False
         pygame.display.update()
